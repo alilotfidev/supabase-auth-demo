@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
@@ -9,6 +10,12 @@ export default function AuthForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // check if user is already loggedin
+  useEffect(() => {
+    if (user) navigate("/dashboard", { replace: true });
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
