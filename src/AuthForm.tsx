@@ -21,6 +21,20 @@ export default function AuthForm() {
     e.preventDefault();
     setError("");
 
+    // a basic validation
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Email is invalid");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       setIsLoading(true);
       if (isLogin) {
@@ -42,8 +56,18 @@ export default function AuthForm() {
     <div className="auth-container">
       <h2>{isLogin ? "Login" : "Sign Up"}</h2>
       <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
         </button>
