@@ -4,13 +4,15 @@ import { useAuth } from "./context/AuthContext";
 export default function Dashboard() {
   const { user } = useAuth();
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await supabase.auth.signOut();
   };
 
   return (
     <div className="dashboard">
-      <h1>Welcome, {user.email} 👋</h1>
+      <h1>
+        Welcome, {user?.email} 👋
+      </h1>
       <button onClick={handleLogout}>Logout</button>
     </div>
   );

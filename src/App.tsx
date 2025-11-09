@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,11 +9,17 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import AuthForm from "./AuthForm";
 import Dashboard from "./Dashboard";
 
-function ProtectedRoute({ children }) {
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
+
   if (loading) return <p>Loading...</p>;
   if (!user) return <Navigate to="/login" replace />;
-  return children;
+
+  return <>{children}</>;
 }
 
 export default function App() {
@@ -29,9 +36,10 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
     </Router>
   );
 }
+
