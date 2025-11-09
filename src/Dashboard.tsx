@@ -9,9 +9,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="dashboard">
-      <h1>Welcome, {user?.email} 👋</h1>
-      <button onClick={handleLogout}>Logout</button>
+    <div className="dashboard h-screen overflow-hidden flex flex-col gap-8 justify-center items-center">
+      <h1 className="text-4xl font-medium">Welcome, {user?.email} 👋</h1>
+      <button
+        onClick={handleLogout}
+        className="bg-red-600 rounded-full text-white font-semibold px-4 py-1"
+      >
+        Logout
+      </button>
     </div>
   );
 }

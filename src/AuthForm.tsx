@@ -53,29 +53,37 @@ export default function AuthForm() {
   };
 
   return (
-    <div className="auth-container">
-      <h2>{isLogin ? "Login" : "Sign Up"}</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
-        </button>
-      </form>
-      <p onClick={() => setIsLogin(!isLogin)} style={{ cursor: "pointer" }}>
-        {isLogin ? "Need an account? Sign up" : "Already have one? Log in"}
-      </p>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="auth-container flex justify-center items-center h-screen">
+      <div className="card flex flex-col gap-8">
+        <h2 className="text-3xl font-bold">{isLogin ? "Login" : "Sign Up"}</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border px-4 py-1 rounded-full"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="border px-4 py-1 rounded-full"
+          />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-black rounded-full text-white font-semibold px-4 py-1"
+          >
+            {isLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
+          </button>
+        </form>
+        <p onClick={() => setIsLogin(!isLogin)} style={{ cursor: "pointer" }}>
+          {isLogin ? "Need an account? Sign up" : "Already have one? Log in"}
+        </p>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </div>
     </div>
   );
 }
