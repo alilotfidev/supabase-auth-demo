@@ -1,18 +1,18 @@
 import { useState, useEffect, FormEvent } from "react";
-import { supabase } from "./lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import * as authService from "./services/authService";
 
 export default function AuthForm() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isLogin, setIsLogin] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // check if user is already logged in
   useEffect(() => {
     if (user) navigate("/dashboard", { replace: true });
   }, [user, navigate]);
@@ -23,21 +23,11 @@ export default function AuthForm() {
 
     try {
       setIsLoading(true);
-
       if (isLogin) {
-        const { error: loginError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (loginError) throw loginError;
+        await authService.login(email, password);
         navigate("/dashboard", { replace: true });
       } else {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (signUpError) throw signUpError;
+        await authService.signUp(email, password);
         alert("Check your email for a confirmation link!");
         setIsLogin(true);
       }
@@ -52,18 +42,8 @@ export default function AuthForm() {
     <div className="auth-container">
       <h2>{isLogin ? "Login" : "Sign Up"}</h2>
       <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Loading..." : isLogin ? "Login" : "Sign Up"}
         </button>

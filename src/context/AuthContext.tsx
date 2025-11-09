@@ -1,61 +1,50 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import type { User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabaseClient";
-import type { User, Session } from "@supabase/supabase-js";
+import * as authService from "../services/authService";
 
-// 1️⃣ Define the context type
+// Context type
 interface AuthContextType {
   user: User | null;
   loading: boolean;
 }
 
-// 2️⃣ Create context with correct generic type
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// 3️⃣ Provider props type
+// Props type
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-// 4️⃣ Provider component
+// Create context
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user ?? null);
+    // Fetch current user on mount
+    const fetchUser = async () => {
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
       setLoading(false);
     };
-    getUser();
+    fetchUser();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session: Session | null) => {
-        setUser(session?.user ?? null);
-      }
-    );
+    // Subscribe to auth state changes
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
 
+    // Cleanup subscription on unmount
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
 };
 
-// 5️⃣ Custom hook with type check
+// Custom hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };
