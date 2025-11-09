@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider, useAuth } from "./AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import AuthForm from "./AuthForm";
 import Dashboard from "./Dashboard";
 

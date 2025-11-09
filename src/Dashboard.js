@@ -1,5 +1,5 @@
-import { supabase } from "./supabaseClient";
-import { useAuth } from "./AuthContext";
+import { supabase } from "./lib/supabaseClient";
+import { useAuth } from "./context/AuthContext";
 
 export default function Dashboard() {
   const { user } = useAuth();

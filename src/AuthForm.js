@@ -1,29 +1,37 @@
 import { useState } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "./lib/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
+      setIsLoading(true);
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
+        navigate("/dashboard");
         if (error) throw error;
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         alert("Check your email for a confirmation link!");
+        setIsLogin(true);
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,7 +51,13 @@ export default function AuthForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
+        {isLoading ? (
+          <button type="submit" disabled={isLoading}>
+            loading...
+          </button>
+        ) : (
+          <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
+        )}
       </form>
       <p onClick={() => setIsLogin(!isLogin)} style={{ cursor: "pointer" }}>
         {isLogin ? "Need an account? Sign up" : "Already have one? Log in"}
